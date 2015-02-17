@@ -5,6 +5,6 @@ So i try t play with python and create this tool
 It's sophisticated, it's not bulletproof but works for me.
 
 ## usage:
-*switch add - adding new configuration
-*switch change - change current settings
-*switch show - on what settings i'm current on
+ * switch add - adding new configuration
+ * switch change - change current settings
+ * switch show - on what settings i'm current on
