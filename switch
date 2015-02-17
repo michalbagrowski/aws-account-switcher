@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+
+import yaml
+import os
+import sys
+import string
+
+home = os.getenv("HOME")
+credentials_file = home + '/.aws/acid.switcher.credentials'
+amazon_credentials_file = home + '/.aws/credentials'
+
+def help():
+    print "Usage:"
+    print " add - add new configuration"
+    print " switch 'name' = switch configuration to name"
+    print " show = show name of current configuration"
+
+def check_do_exists(name):
+    current = yaml.load(file(credentials_file))
+    if not  current:
+        return False
+    return name in current
+
+def read():
+    config = yaml.load(file(credentials_file))
+    if not config:
+        return {}
+    else:
+        return config
+
+def read_name_from_aws_credfile():
+    f = open(amazon_credentials_file, 'r')
+    l = f.readlines()
+    line = l[1]
+    t = string.split(line, ' ')
+    return t[1].strip()
+
+if len(sys.argv) == 1:
+    help()
+else:
+    if sys.argv[1] == "add":
+        name = raw_input("Configuration name: ")
+
+        if check_do_exists(name):
+            print "This configuration already exists"
+        else:
+            key = raw_input("AWS key:")
+            secret = raw_input("AWS secret:")
+
+            config = read()
+            config[name] = {}
+            config[name]['aws_access_key_id'] = key
+            config[name]['aws_secret_access_key'] = secret
+
+            with open(credentials_file, 'w') as outfile:
+                outfile.write( yaml.dump(config, default_flow_style=False) )
+
+    elif sys.argv[1] == "change":
+        name = raw_input("switch to?: ")
+        config = read()
+
+
+        if name in config:
+            new_credentials = "[default]\n" \
+                "#name " + name + "\n"\
+                "aws_access_key_id = " + config[name]['aws_access_key_id'] + "\n" \
+                "aws_secret_access_key = " + config[name]['aws_secret_access_key'] + "\n"
+            f = open(amazon_credentials_file, 'w')
+            f.write(new_credentials)
+
+        else:
+            print "conf not exists"
+
+
+    elif sys.argv[1] == "show":
+        print read_name_from_aws_credfile()
+    else:
+        print "unknown option: " + sys.argv[1]
+        help()
