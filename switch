@@ -7,6 +7,8 @@ import string
 
 home = os.getenv("HOME")
 credentials_file = home + '/.aws/acid.switcher.credentials'
+if not os.path.isfile(credentials_file):
+    open(credentials_file, 'a').close()
 amazon_credentials_file = home + '/.aws/credentials'
 
 def help():
